@@ -39,6 +39,7 @@ namespace DeskShell.Controls
         {
             InitializeComponent();
             MouseDoubleClick += DeskFile_MouseDoubleClick;
+            MouseLeftButtonDown += DeskFile_MouseLeftButtonDown;
         }
         #endregion
 
@@ -46,6 +47,11 @@ namespace DeskShell.Controls
         private void DeskFile_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Process.Start(Target);
+        }
+
+        private void DeskFile_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            border.Focus();
         }
         #endregion
     }

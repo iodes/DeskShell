@@ -7,9 +7,26 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
 
-    <Border Padding="10,10,10,0">
+    <Border x:Name="border" Padding="10,10,10,0" BorderThickness="1" Focusable="True">
+        <Border.Style>
+            <Style TargetType="{x:Type Border}">
+                <Setter Property="Background" Value="#01000000"/>
+                <Setter Property="BorderBrush" Value="#01000000"/>
+                <Style.Triggers>
+                    <Trigger Property="IsFocused" Value="True">
+                        <Setter Property="Background" Value="#33CAEEFF"/>
+                        <Setter Property="BorderBrush" Value="#7FF9FDFF"/>
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#338CDAFF"/>
+                        <Setter Property="BorderBrush" Value="#7FC2EAFD"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+        
         <StackPanel>
-            <Image x:Name="ImageIcon" Grid.Row="0" Margin="10,5"/>
+            <Image x:Name="ImageIcon" Grid.Row="0" Margin="10,0,10,5"/>
             <TextBlock x:Name="textTitle" Grid.Row="1" MaxHeight="40" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" TextAlignment="Center" Foreground="White">
                 <TextBlock.Effect>
                     <DropShadowEffect ShadowDepth="1" Direction="270"/>
