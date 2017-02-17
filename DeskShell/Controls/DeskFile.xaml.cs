@@ -22,8 +22,11 @@ namespace DeskShell.Controls
             {
                 _Target = value;
 
-                textTitle.Text = Path.GetFileNameWithoutExtension(Target);
-                ImageIcon.Source = IconUtility.GetIcon(Target, IconUtility.IconSize.ExtraLarge);
+                if (File.Exists(Target))
+                {
+                    textTitle.Text = Path.GetFileNameWithoutExtension(Target);
+                    ImageIcon.Source = IconUtility.GetIcon(Target, IconUtility.IconSize.ExtraLarge);
+                }
             }
         }
         private string _Target;
