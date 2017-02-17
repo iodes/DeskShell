@@ -1,13 +1,8 @@
 ﻿using DeskShell.Natives;
-using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace DeskShell.Controls
 {
@@ -38,12 +33,26 @@ namespace DeskShell.Controls
         public DeskFile()
         {
             InitializeComponent();
+
+            Drop += DeskFile_Drop;
             MouseDoubleClick += DeskFile_MouseDoubleClick;
             MouseLeftButtonDown += DeskFile_MouseLeftButtonDown;
         }
         #endregion
 
         #region 이벤트
+        private void DeskFile_Drop(object sender, DragEventArgs e)
+        {
+            var files = e.Data.GetData(DataFormats.FileDrop, false) as string[];
+
+            for (int i = 0; i < files.Length; i++)
+            {
+                files[i] = $@"""{files[i]}""";
+            }
+
+            Process.Start(Target, string.Join(" ", files));
+        }
+
         private void DeskFile_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Process.Start(Target);
