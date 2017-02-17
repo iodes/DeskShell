@@ -6,7 +6,18 @@ namespace DeskShell.Natives
 {
     public static class ShellUtility
     {
-        private static int originalStyle;
+        public static void SetShell(Window target)
+        {
+            if (target.Owner != null)
+            {
+                SetDesktop(target);
+
+                target.Top = target.Owner.Top;
+                target.Left = target.Owner.Left;
+                target.Width = target.Owner.Width;
+                target.Height = target.Owner.Height;
+            }
+        }
 
         public static void SetDesktop(Window target)
         {
@@ -18,26 +29,26 @@ namespace DeskShell.Natives
 
             WinAPI.SetParent(handle, defView);
             WinAPI.ShowWindow(folderView, WinAPI.ShowWindowCommands.Hide);
-
             WinAPI.SetWindowLong(handle, WinAPI.GWL_EXSTYLE, WinAPI.GetWindowLong(handle, WinAPI.GWL_EXSTYLE) | WinAPI.WS_EX_NOACTIVATE);
+
+            target.Top = 0;
+            target.Left = 0;
+            target.Width = SystemParameters.PrimaryScreenWidth;
+            target.Height = SystemParameters.PrimaryScreenHeight;
         }
 
         public static void SetTranspernt(Window target, bool value)
         {
             var handle = new WindowInteropHelper(target).EnsureHandle();
-
-            if (originalStyle == 0)
-            {
-                originalStyle = WinAPI.GetWindowLong(handle, WinAPI.GWL_EXSTYLE);
-            }
+            var extendedStyle = WinAPI.GetWindowLong(handle, WinAPI.GWL_EXSTYLE);
 
             if (value)
             {
-                WinAPI.SetWindowLong(handle, WinAPI.GWL_EXSTYLE, originalStyle | WinAPI.WS_EX_TRANSPARENT);
+                WinAPI.SetWindowLong(handle, WinAPI.GWL_EXSTYLE, extendedStyle | WinAPI.WS_EX_TRANSPARENT);
             }
             else
             {
-                WinAPI.SetWindowLong(handle, WinAPI.GWL_EXSTYLE, originalStyle);
+                WinAPI.SetWindowLong(handle, WinAPI.GWL_EXSTYLE, extendedStyle & ~WinAPI.WS_EX_TRANSPARENT);
             }
         }
     }

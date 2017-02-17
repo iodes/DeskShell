@@ -1,21 +1,9 @@
-﻿using DeskShell.Controls;
-using DeskShell.Natives;
+﻿using DeskShell.Natives;
 using Gma.System.MouseKeyHook;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace DeskShell
@@ -26,41 +14,54 @@ namespace DeskShell
     public partial class MainWindow : Window
     {
         #region 객체
-        private FileSystemWatcher watcher;
+        private ShellWindow shell;
         private IKeyboardMouseEvents globalHook;
         #endregion
 
         #region 생성자
         public MainWindow()
         {
-            RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.HighQuality);
             InitializeComponent();
-            InitializeView();
-
-            watcher = new FileSystemWatcher
-            {
-                Path = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
-                NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName,
-                EnableRaisingEvents = true
-            };
-            watcher.Created += Watcher_Event;
-            watcher.Deleted += Watcher_Event;
+            RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.HighQuality);
 
             globalHook = Hook.GlobalEvents();
             globalHook.MouseDragStartedExt += GlobalHook_MouseDragStartedExt;
             globalHook.MouseDragFinishedExt += GlobalHook_MouseDragFinishedExt;
+
+            Loaded += MainWindow_Loaded;
         }
         #endregion
 
         #region 이벤트
-        private void Watcher_Event(object sender, FileSystemEventArgs e)
+        protected override void OnSourceInitialized(EventArgs e)
         {
-            Dispatcher.Invoke(() =>
+            base.OnSourceInitialized(e);
+            (PresentationSource.FromVisual(this) as HwndSource).AddHook(WndProc);
+        }
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WinAPI.WM_MOUSEACTIVATE)
             {
-                deskPanel.Children.Clear();
-                CreateFiles(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
-                CreateFiles(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory));
-            });
+                handled = true;
+                return new IntPtr(WinAPI.MA_NOACTIVATE);
+            }
+            else
+            {
+                return IntPtr.Zero;
+            }
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            ShellUtility.SetDesktop(this);
+
+            shell = new ShellWindow
+            {
+                Owner = this
+            };
+
+            shell.Show();
         }
 
         private void GlobalHook_MouseDragStartedExt(object sender, MouseEventExtArgs e)
@@ -82,38 +83,6 @@ namespace DeskShell
             };
 
             delayTimer.Start();
-        }
-        #endregion
-
-        #region 내부 함수
-        private void InitializeView()
-        {
-            Top = 0;
-            Left = 0;
-            Width = SystemParameters.PrimaryScreenWidth;
-            Height = SystemParameters.PrimaryScreenHeight;
-
-            ShellUtility.SetDesktop(this);
-            CreateFiles(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
-            CreateFiles(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory));
-        }
-
-        private void CreateFiles(string path)
-        {
-            var files = new DirectoryInfo(path).GetFiles();
-
-            foreach (var file in files)
-            {
-                if (!file.Attributes.HasFlag(FileAttributes.Hidden))
-                {
-                    deskPanel.Children.Add(new DeskFile
-                    {
-                        Width = 80,
-                        Margin = new Thickness(0, 0, 0, 10),
-                        Target = file.FullName
-                    });
-                }
-            }
         }
         #endregion
     }

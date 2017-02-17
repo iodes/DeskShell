@@ -37,6 +37,9 @@ namespace DeskShell.Natives
         public const int WS_EX_COMPOSITED = 0x02000000;
         public const int WS_EX_NOACTIVATE = 0x08000000;
 
+        public const int WM_MOUSEACTIVATE = 0x0021;
+        public const int MA_NOACTIVATE = 0x0003;
+
         public enum ShowWindowCommands
         {
             /// <summary>
