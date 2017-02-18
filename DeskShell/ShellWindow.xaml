@@ -1,4 +1,4 @@
-﻿<Window x:Class="DeskShell.ShellWindow"
+﻿<Window xmlns:Controls="clr-namespace:DeskShell.Controls"  x:Class="DeskShell.ShellWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:DeskShell"
         mc:Ignorable="d"
         Title="DeskShell" WindowStyle="None" AllowsTransparency="True" Height="350" Width="525" Background="{x:Null}">
-    
-    <Grid>
-        <WrapPanel x:Name="deskPanel" Orientation="Vertical"/>
-    </Grid>
+
+    <Controls:DeskGrid x:Name="gridDesk" ItemWidth="85" ItemHeight="100">
+        
+    </Controls:DeskGrid>
 </Window>

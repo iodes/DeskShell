@@ -46,7 +46,8 @@ namespace DeskShell
         {
             Dispatcher.Invoke(() =>
             {
-                deskPanel.Children.Clear();
+                gridDesk.Clear();
+
                 CreateFiles(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory));
                 CreateFiles(Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory));
             });
@@ -62,10 +63,8 @@ namespace DeskShell
             {
                 if (!file.Attributes.HasFlag(FileAttributes.Hidden))
                 {
-                    deskPanel.Children.Add(new DeskFile
+                    gridDesk.Add(new DeskFile
                     {
-                        Width = 80,
-                        Margin = new Thickness(0, 0, 0, 10),
                         Target = file.FullName
                     });
                 }

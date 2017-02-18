@@ -118,34 +118,32 @@ namespace DeskShell.Natives
             var shinfo = new SHFILEINFOW();
             var flags = SHGFI_SYSICONINDEX;
 
-            if (SHGetFileInfoW(path, FILE_ATTRIBUTE_NORMAL, ref shinfo, Marshal.SizeOf(shinfo), flags) == 0)
+            if (SHGetFileInfoW(path, FILE_ATTRIBUTE_NORMAL, ref shinfo, Marshal.SizeOf(shinfo), flags) != 0)
             {
-                throw new FileNotFoundException();
-            }
+                IImageList iml = null;
+                var guid = new Guid("46EB5926-582E-4017-9FDF-E8998DAA0950");
+                SHGetImageList((int)size, ref guid, ref iml);
 
-            IImageList iml = null;
-            var guid = new Guid("46EB5926-582E-4017-9FDF-E8998DAA0950");
-            SHGetImageList((int)size, ref guid, ref iml);
-
-            if (iml != null)
-            {
-                var hIcon = IntPtr.Zero;
-                iml.GetIcon(shinfo.iIcon, (int)ILD_IMAGE, ref hIcon);
-
-                var icon = Icon.FromHandle(hIcon);
-
-                if (icon.ToBitmap().PixelFormat != PixelFormat.Format32bppArgb)
+                if (iml != null)
                 {
+                    var hIcon = IntPtr.Zero;
+                    iml.GetIcon(shinfo.iIcon, (int)ILD_IMAGE, ref hIcon);
+
+                    var icon = Icon.FromHandle(hIcon);
+
+                    if (icon.ToBitmap().PixelFormat != PixelFormat.Format32bppArgb)
+                    {
+                        icon.Dispose();
+                        DestroyIcon(hIcon);
+                        iml.GetIcon(shinfo.iIcon, (int)ILD_TRANSPARENT, ref hIcon);
+                    }
+
+                    result = Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                    result.Freeze();
+
                     icon.Dispose();
                     DestroyIcon(hIcon);
-                    iml.GetIcon(shinfo.iIcon, (int)ILD_TRANSPARENT, ref hIcon);
                 }
-
-                result = Imaging.CreateBitmapSourceFromHIcon(icon.Handle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                result.Freeze();
-
-                icon.Dispose();
-                DestroyIcon(hIcon);
             }
 
             return result;
