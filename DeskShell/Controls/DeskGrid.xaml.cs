@@ -176,8 +176,6 @@ namespace DeskShell.Controls
             Grid.SetRow(element, lastRow);
             Grid.SetColumn(element, lastCol);
 
-            Console.WriteLine($"{lastRow} : {lastCol} : {gridPanel.RowDefinitions.Count}");
-
             if (lastRow >= gridPanel.RowDefinitions.Count)
             {
                 lastRow = 0;

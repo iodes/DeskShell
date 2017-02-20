@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DeskShell"
         mc:Ignorable="d"
-        Title="DeskShell" WindowStyle="None" AllowsTransparency="True" Height="350" Width="525" Background="#01000000">
+        Title="DeskShell" WindowStyle="None" ShowInTaskbar="False" AllowsTransparency="True" Height="350" Width="525" Background="#01000000">
 
     <Grid>
         

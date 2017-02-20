@@ -23,18 +23,32 @@ namespace DeskShell.Natives
         {
             var handle = new WindowInteropHelper(target).EnsureHandle();
 
-            var progman = WinAPI.FindWindow("Progman", null);
-            var defView = WinAPI.FindWindowEx(progman, IntPtr.Zero, "SHELLDLL_DefView", null);
-            var folderView = WinAPI.FindWindowEx(defView, IntPtr.Zero, "SysListView32", null);
+            IntPtr defView = IntPtr.Zero;
+            WinAPI.EnumWindows(new WinAPI.EnumWindowsProc((tophandle, topparamhandle) =>
+            {
+                var tempView = WinAPI.FindWindowEx(tophandle, IntPtr.Zero, "SHELLDLL_DefView", null);
 
-            WinAPI.SetParent(handle, defView);
-            WinAPI.ShowWindow(folderView, WinAPI.ShowWindowCommands.Hide);
-            WinAPI.SetWindowLong(handle, WinAPI.GWL_EXSTYLE, WinAPI.GetWindowLong(handle, WinAPI.GWL_EXSTYLE) | WinAPI.WS_EX_NOACTIVATE);
+                if (tempView != IntPtr.Zero)
+                {
+                    defView = tempView;
+                }
 
-            target.Top = 0;
-            target.Left = 0;
-            target.Width = SystemParameters.PrimaryScreenWidth;
-            target.Height = SystemParameters.PrimaryScreenHeight;
+                return true;
+            }), IntPtr.Zero);
+
+            if (defView != IntPtr.Zero)
+            {
+                var folderView = WinAPI.FindWindowEx(defView, IntPtr.Zero, "SysListView32", null);
+
+                WinAPI.SetParent(handle, defView);
+                WinAPI.ShowWindow(folderView, WinAPI.ShowWindowCommands.Hide);
+                WinAPI.SetWindowLong(handle, WinAPI.GWL_EXSTYLE, WinAPI.GetWindowLong(handle, WinAPI.GWL_EXSTYLE) | WinAPI.WS_EX_NOACTIVATE);
+
+                target.Top = 0;
+                target.Left = 0;
+                target.Width = SystemParameters.PrimaryScreenWidth;
+                target.Height = SystemParameters.PrimaryScreenHeight;
+            }
         }
 
         public static void SetTranspernt(Window target, bool value)

@@ -40,6 +40,8 @@ namespace DeskShell.Natives
         public const int WM_MOUSEACTIVATE = 0x0021;
         public const int MA_NOACTIVATE = 0x0003;
 
+        public delegate bool EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
+
         public enum ShowWindowCommands
         {
             /// <summary>
@@ -130,5 +132,9 @@ namespace DeskShell.Natives
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ShowWindow(IntPtr hWnd, ShowWindowCommands nCmdShow);
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
     }
 }
